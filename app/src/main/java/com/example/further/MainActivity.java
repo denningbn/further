@@ -8,7 +8,7 @@ import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button startRun, viewHistory, viewSettings;
+    Button startRun, viewHistory, viewSettings, viewCycles;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -17,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
         startRun = findViewById(R.id.start_run);
         viewHistory = findViewById(R.id.view_history);
         viewSettings = findViewById(R.id.view_settings);
+        viewCycles = findViewById(R.id.view_cycles);
 
         startRun.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RunActivity.class);
@@ -31,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
 
         viewSettings.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
+
+        viewCycles.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, CycleActivity.class);
             startActivity(intent);
         });
     }
