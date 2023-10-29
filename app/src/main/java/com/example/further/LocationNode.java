@@ -33,8 +33,13 @@ public class LocationNode<Location> {
     }
 
     public void addNode(Location _data){
+        if (this == null){
+            return;
+        }
+
         if (this.next == null){
             this.setNext(new LocationNode<Location>(_data));
+            return;
         }
         else {
             this.next.addNode(_data);

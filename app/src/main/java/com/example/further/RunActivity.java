@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +24,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 public class RunActivity extends AppCompatActivity {
 
     private static final int PERMISSIONS_FINE_LOCATION = 99;
-    TextView tv_location;
+    TextView tv_location, tv_node;
 
     LocationRequest locationRequest;
 
@@ -48,28 +49,38 @@ public class RunActivity extends AppCompatActivity {
 
         //ui elements
         tv_location = findViewById(R.id.tv_location);
+        tv_node = findViewById(R.id.tv_node_count);
 
         //create location request
-        locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
-                .setMinUpdateIntervalMillis(5000)
-                .build();
+        //locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000).setMinUpdateIntervalMillis(5000).build();
+
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
         //by default everything is set to true
         trackingLocation = true;
         coarseFineAccuracy = true;
         slowFastInterval = true;
 
+        locationRequest = createLocReq();
+
+        first = new LocationNode(null);
+
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
 
-                Location location = locationResult.getLastLocation();
                 //Here is where we do stuff with the location.
 
-                if (location != null) {
-                    tv_location.setText(location.toString());
+                if (locationResult == null) {
+                    tv_location.setText("Location Results are Null");
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    updateGPS();
                     first.addNode(location);
+                    testNode();
                 }
             }
         };
@@ -77,6 +88,7 @@ public class RunActivity extends AppCompatActivity {
         if (trackingLocation) {
             startLocationUpdates();
         }
+
         updateGPS();
     }
 
@@ -91,7 +103,15 @@ public class RunActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        //fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+    }
+
+    protected void onResume(){
+        super.onResume();
+
+        if (trackingLocation){
+            startLocationUpdates();
+        }
     }
 
     @Override
@@ -110,9 +130,6 @@ public class RunActivity extends AppCompatActivity {
     }
 
     private void updateGPS() {
-        //create location client
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
                 @Override
@@ -146,8 +163,6 @@ public class RunActivity extends AppCompatActivity {
         int priority;
         long interval;
 
-
-
         if (coarseFineAccuracy){
             priority = Priority.PRIORITY_HIGH_ACCURACY;
         }
@@ -163,5 +178,18 @@ public class RunActivity extends AppCompatActivity {
         }
 
         return new LocationRequest.Builder(priority, interval).setMinUpdateIntervalMillis(5000).build();
+    }
+
+    private void testNode(){
+        tv_node.setText(Integer.toString(first.getLength()));
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    private void stopLocationUpdates() {
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 }
