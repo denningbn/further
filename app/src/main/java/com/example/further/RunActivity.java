@@ -32,6 +32,10 @@ public class RunActivity extends AppCompatActivity {
     private LocationCallback locationCallback;
 
     public boolean trackingLocation;
+    //bool to describe whether it's coarse/0 or fine/1
+    public boolean coarseFineAccuracy;
+    //bool to describe slow/0 or fast/0
+    public boolean slowFastInterval;
 
     //runtime location object storage
     private LocationNode first;
@@ -50,8 +54,10 @@ public class RunActivity extends AppCompatActivity {
                 .setMinUpdateIntervalMillis(5000)
                 .build();
 
-
+        //by default everything is set to true
         trackingLocation = true;
+        coarseFineAccuracy = true;
+        slowFastInterval = true;
 
         locationCallback = new LocationCallback() {
             @Override
@@ -134,5 +140,28 @@ public class RunActivity extends AppCompatActivity {
             //TODO
             //add all of the location data to the sql database
         }
+    }
+
+    private LocationRequest createLocReq(){
+        int priority;
+        long interval;
+
+
+
+        if (coarseFineAccuracy){
+            priority = Priority.PRIORITY_HIGH_ACCURACY;
+        }
+        else{
+            priority = Priority.PRIORITY_LOW_POWER;
+        }
+
+        if (slowFastInterval){
+            interval = 5 * 1000;
+        }
+        else{
+            interval = 20 * 1000;
+        }
+
+        return new LocationRequest.Builder(priority, interval).setMinUpdateIntervalMillis(5000).build();
     }
 }
