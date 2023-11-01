@@ -38,6 +38,8 @@ public class RunActivity extends AppCompatActivity {
     //bool to describe slow/0 or fast/0
     public boolean slowFastInterval;
 
+    public boolean encrypt;
+
     //runtime location object storage
     private LocationNode first;
 
@@ -65,6 +67,13 @@ public class RunActivity extends AppCompatActivity {
         locationRequest = createLocReq();
 
         first = new LocationNode(null);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null){
+            coarseFineAccuracy = extras.getBoolean("coarseFineAccuracy");
+            slowFastInterval = extras.getBoolean("slowFastInterval");
+            encrypt = extras.getBoolean("encrypt");
+        }
 
         locationCallback = new LocationCallback() {
             @Override
