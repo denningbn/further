@@ -10,6 +10,8 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,19 +45,41 @@ public class RunActivity extends AppCompatActivity {
     //runtime location object storage
     private LocationNode first;
 
+    private boolean paused;
+    private String startPausedRun, pauseRun;
+
+    Button b_pause, b_end;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        startPausedRun = "Start Paused Run";
+        pauseRun = "Pause Run";
         setContentView(R.layout.activity_run);
 
         //ui elements
         tv_location = findViewById(R.id.tv_location);
         tv_node = findViewById(R.id.tv_node_count);
 
-        //create location request
-        //locationRequest = new LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000).setMinUpdateIntervalMillis(5000).build();
+        b_end = findViewById(R.id.b_end);
+        b_pause = findViewById(R.id.b_pause);
 
+        b_pause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!paused)
+                {
+                        stopLocationUpdates();
+                        paused = true;
+                        b_pause.setText(startPausedRun);
+                }
+                else {
+                    startLocationUpdates();
+                    paused = false;
+                    b_pause.setText(pauseRun);
+                }
+            }
+        });
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
