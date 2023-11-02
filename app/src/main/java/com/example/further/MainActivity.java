@@ -3,6 +3,7 @@ package com.example.further;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -11,6 +12,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+
+    private AppDatabase appDatabase;
+    private SettingsDAO settingsDao;
 
     Button startRun, viewHistory, viewSettings, viewCycles;
 
@@ -34,6 +38,15 @@ public class MainActivity extends AppCompatActivity {
         coarseFineAccuracy = true;
         slowFastInterval = true;
         encrypt = true;
+
+        appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
+        settingsDao = appDatabase.settingsDao();
+
+        Settings settings = new Settings();
+
+
+
+
 
         someActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> {
