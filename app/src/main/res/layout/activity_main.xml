@@ -48,4 +48,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <Button
+        android:id="@+id/b_encrypt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="196dp"
+        android:text="show encrypt option"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_encrypt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="encryption?"
+        tools:layout_editor_absoluteX="169dp"
+        tools:layout_editor_absoluteY="99dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

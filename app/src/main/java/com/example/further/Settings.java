@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "Settings")
 public class Settings {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
     public int id;
 
     @ColumnInfo(name = "coarseFineAccuracy")
@@ -20,6 +20,7 @@ public class Settings {
 
 
     public Settings(){
+        id = 1;
         coarseFineAccuracy = true;
         slowFastInterval = true;
         encrypt = true;
@@ -28,9 +29,6 @@ public class Settings {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public void setCoarseFineAccuracy(boolean coarseFineAccuracy){
         this.coarseFineAccuracy = coarseFineAccuracy;

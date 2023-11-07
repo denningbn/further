@@ -11,6 +11,12 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+
+
 public class MainActivity extends AppCompatActivity {
 
     private AppDatabase appDatabase;
@@ -24,7 +30,14 @@ public class MainActivity extends AppCompatActivity {
     public boolean slowFastInterval;
     public boolean encrypt;
 
+    private Settings settings;
+    private long settingsId;
+
     TextView tv_encrypt;
+    Button b_encrypt;
+
+    private Observable<Settings> databaseObservable;
+    private Settings initialSettings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,38 +48,34 @@ public class MainActivity extends AppCompatActivity {
         viewSettings = findViewById(R.id.view_settings);
         viewCycles = findViewById(R.id.view_cycles);
 
-        coarseFineAccuracy = true;
-        slowFastInterval = true;
-        encrypt = true;
+
+        tv_encrypt = findViewById(R.id.tv_encrypt);
+        b_encrypt = findViewById(R.id.b_encrypt);
 
         appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
         settingsDao = appDatabase.settingsDao();
 
-        Settings settings = new Settings();
+        initialSettings = new Settings();
 
+        databaseObservable  = Observable.create(emitter -> {
+                if (settingsDao.getSettings() == null){
+                    settingsDao.update(initialSettings);
+                }
 
+                emitter.onNext(settingsDao.getSettings());
+                emitter.onComplete();
+        });
 
+        Disposable disposable = databaseObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(settings -> {
 
-
-        someActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
-                        Intent retIntent = result.getData();
-                        if (retIntent != null) {
-                            coarseFineAccuracy = retIntent.getBooleanExtra("coarseFineAccuracy", true);
-                            slowFastInterval = retIntent.getBooleanExtra("slowFastInterval", true);
-                            encrypt = retIntent.getBooleanExtra("encrypt", true);
-                        }
-                    }
+                    tv_encrypt.setText(Boolean.toString(settings.encrypt));
                 });
-
 
         startRun.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RunActivity.class);
-
-            intent.putExtra("coarseFineAccuracy", coarseFineAccuracy);
-            intent.putExtra("slowFastInterval", slowFastInterval);
-            intent.putExtra("encrypt",encrypt);
 
             startActivity(intent);
         });
@@ -80,10 +89,6 @@ public class MainActivity extends AppCompatActivity {
         viewSettings.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
 
-            intent.putExtra("coarseFineAccuracy", coarseFineAccuracy);
-            intent.putExtra("slowFastInterval", slowFastInterval);
-            intent.putExtra("encrypt",encrypt);
-
             someActivityResultLauncher.launch(intent);
         });
 
@@ -92,6 +97,23 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-
     }
+
+    private void checkDatabase()
+    {
+        //check if SettingsDatabase exists,
+        // if not, initialize it
+
+            Settings settings = settingsDao.getSettings();
+
+            if (settings == null){
+                settings.setEncrypt(true);
+                settings.setCoarseFineAccuracy(true);
+                settings.setSlowFastInterval(true);
+
+                settingsDao.update(settings);
+            }
+    }
+
+
 }

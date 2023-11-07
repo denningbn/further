@@ -35,6 +35,8 @@ dependencies {
     val roomVersion = "2.6.0" // Use the latest version
     implementation("androidx.room:room-runtime:$roomVersion")
     annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    implementation("io.reactivex.rxjava3:rxjava:3.1.5")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")

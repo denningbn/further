@@ -1,14 +1,20 @@
 package com.example.further;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
 
 public class SettingsActivity extends AppCompatActivity {
     boolean coarseFineAccuracy = true;
@@ -21,6 +27,19 @@ public class SettingsActivity extends AppCompatActivity {
 
     Button b_settings;
 
+    TextView tv_encrypt2;
+
+    private BehaviorSubject<Settings> settingsSubject;
+
+    private AppDatabase appDatabase;
+
+    private SettingsDAO settingsDao;
+
+    private Settings currentSettings;
+
+    private Settings initialSettings;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,22 +51,37 @@ public class SettingsActivity extends AppCompatActivity {
 
         b_settings = findViewById(R.id.b_settings);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null){
-            coarseFineAccuracy = extras.getBoolean("coarseFineAccuracy");
-            slowFastInterval = extras.getBoolean("slowFastInterval");
-            encrypt = extras.getBoolean("encrypt");
-        }
+        tv_encrypt2 = findViewById(R.id.tv_encrypt2);
+
+        //get the database DAO
+        appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
+        settingsDao = appDatabase.settingsDao();
+
+        settingsSubject = BehaviorSubject.create();
+
+        initialSettings = settingsDao.getSettings();
+
+        settingsSubject.onNext(initialSettings);
+
+        Disposable disposable = settingsSubject
+                .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(updateSettings ->{
+                                    settingsDao.update(updateSettings);
+                                });
 
 
-        sw_interval.setChecked(coarseFineAccuracy);
-        sw_location.setChecked(slowFastInterval);
-        sw_encrypt.setChecked(encrypt);
+
+        sw_interval.setChecked(currentSettings.slowFastInterval);
+        sw_location.setChecked(currentSettings.coarseFineAccuracy);
+        sw_encrypt.setChecked(currentSettings.encrypt);
 
         sw_interval.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                slowFastInterval = sw_interval.isChecked();
+                currentSettings.slowFastInterval = sw_interval.isChecked();
+
+                settingsSubject.onNext(currentSettings);
             }
         });
 
@@ -55,7 +89,9 @@ public class SettingsActivity extends AppCompatActivity {
         sw_location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                coarseFineAccuracy = sw_location.isChecked();
+                currentSettings.coarseFineAccuracy = sw_location.isChecked();
+
+                settingsSubject.onNext(currentSettings);
             }
         });
 
@@ -63,19 +99,9 @@ public class SettingsActivity extends AppCompatActivity {
         sw_encrypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                encrypt = sw_encrypt.isChecked();
-            }
-        });
+                currentSettings.encrypt = sw_encrypt.isChecked();
 
-        b_settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("encrypt", encrypt);
-                resultIntent.putExtra("coarseFineAccuracy", coarseFineAccuracy);
-                resultIntent.putExtra("slowFastInterval", slowFastInterval);
-                setResult(RESULT_OK, resultIntent);
+                settingsSubject.onNext(currentSettings);
             }
         });
     }
