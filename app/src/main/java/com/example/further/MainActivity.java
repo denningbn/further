@@ -30,14 +30,15 @@ public class MainActivity extends AppCompatActivity {
     public boolean slowFastInterval;
     public boolean encrypt;
 
-    private Settings settings;
+    private Settings currentSettings;
     private long settingsId;
 
     TextView tv_encrypt;
     Button b_encrypt;
 
     private Observable<Settings> databaseObservable;
-    private Settings initialSettings;
+    private Disposable disposable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,27 +53,8 @@ public class MainActivity extends AppCompatActivity {
         tv_encrypt = findViewById(R.id.tv_encrypt);
         b_encrypt = findViewById(R.id.b_encrypt);
 
-        appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
-        settingsDao = appDatabase.settingsDao();
+        initSettings();
 
-        initialSettings = new Settings();
-
-        databaseObservable  = Observable.create(emitter -> {
-                if (settingsDao.getSettings() == null){
-                    settingsDao.update(initialSettings);
-                }
-
-                emitter.onNext(settingsDao.getSettings());
-                emitter.onComplete();
-        });
-
-        Disposable disposable = databaseObservable
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(settings -> {
-
-                    tv_encrypt.setText(Boolean.toString(settings.encrypt));
-                });
 
         startRun.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RunActivity.class);
@@ -89,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         viewSettings.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
 
-            someActivityResultLauncher.launch(intent);
+            startActivity(intent);
         });
 
         viewCycles.setOnClickListener(v -> {
@@ -97,23 +79,41 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        b_encrypt.setOnClickListener(v -> {
+            initSettings();
+            tv_encrypt.setText(currentSettings.toString());
+        });
+
     }
 
-    private void checkDatabase()
-    {
-        //check if SettingsDatabase exists,
-        // if not, initialize it
+    private void initSettings(){
+        databaseObservable = Observable.create(emitter -> {
+            appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
+            settingsDao = appDatabase.settingsDao();
 
-            Settings settings = settingsDao.getSettings();
+            currentSettings = settingsDao.getSettingsById(2);
 
-            if (settings == null){
-                settings.setEncrypt(true);
-                settings.setCoarseFineAccuracy(true);
-                settings.setSlowFastInterval(true);
-
-                settingsDao.update(settings);
+            if (currentSettings == null){
+                currentSettings = new Settings(2);
+                settingsDao.insert(currentSettings);
             }
+
+            emitter.onNext(settingsDao.getSettingsById(2));
+            emitter.onComplete();
+        });
+
+        disposable = databaseObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    tv_encrypt.setText(s.toString());
+                });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        initSettings();
+    }
 }

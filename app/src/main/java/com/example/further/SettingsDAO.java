@@ -12,17 +12,16 @@ import java.util.List;
 public interface SettingsDAO {
     @Insert
     long insert(Settings settings);
-    @Query("SELECT * FROM settings WHERE id IN (:userIds)")
-    List<Settings> loadAllByIds(int[] userIds);
-
-    @Query("SELECT * FROM settings where id = :userId")
-    Settings getSettingsById(long userId);
 
     @Delete
     void delete(Settings settings);
 
     @Query("SELECT * FROM Settings WHERE id = 1")
     Settings getSettings();
+
+
+    @Query("SELECT * FROM Settings WHERE id = :userId")
+    Settings getSettingsById(long userId);
 
     @Update
     void update(Settings settings);

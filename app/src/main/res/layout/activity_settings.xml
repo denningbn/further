@@ -44,7 +44,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="84dp"
-        android:text="Save Settings"
+        android:text="Display Settings"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -53,10 +53,10 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <TextView
-        android:id="@+id/tv_encrypt2"
+        android:id="@+id/tv_match"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Encrypt?"
+        android:text="Database Matches Current Settings?"
         app:layout_constraintBottom_toTopOf="@+id/sw_encrypt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

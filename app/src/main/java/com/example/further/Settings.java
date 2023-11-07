@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "Settings")
 public class Settings {
     @PrimaryKey()
-    public int id;
+    public long id;
 
     @ColumnInfo(name = "coarseFineAccuracy")
     public boolean coarseFineAccuracy;
@@ -25,7 +25,17 @@ public class Settings {
         slowFastInterval = true;
         encrypt = true;
     }
-    public int getId() {
+
+
+    public Settings(long _id){
+        id = _id;
+        coarseFineAccuracy = true;
+        slowFastInterval = true;
+        encrypt = true;
+    }
+
+
+    public long getId() {
         return id;
     }
 
@@ -40,5 +50,9 @@ public class Settings {
     }
     public void setEncrypt(boolean encrypt){
         this.encrypt=encrypt;
+    }
+
+    public String toString(){
+       return ("ID: " + id + "\nEncrypt: " + encrypt + "\nInterval: " + slowFastInterval+ "\nAccuracy: " + slowFastInterval);
     }
 }

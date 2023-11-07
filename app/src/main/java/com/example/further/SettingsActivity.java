@@ -1,7 +1,6 @@
 package com.example.further;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
@@ -27,7 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     Button b_settings;
 
-    TextView tv_encrypt2;
+    TextView tv_match;
 
     private BehaviorSubject<Settings> settingsSubject;
 
@@ -38,6 +38,13 @@ public class SettingsActivity extends AppCompatActivity {
     private Settings currentSettings;
 
     private Settings initialSettings;
+
+    private Observable<Settings> databaseObservable;
+    private Observable<Settings> updateObservable;
+
+    private Disposable disposable;
+    private Disposable updateDisposable;
+
 
 
     @Override
@@ -51,37 +58,21 @@ public class SettingsActivity extends AppCompatActivity {
 
         b_settings = findViewById(R.id.b_settings);
 
-        tv_encrypt2 = findViewById(R.id.tv_encrypt2);
+        tv_match = findViewById(R.id.tv_match);
 
-        //get the database DAO
-        appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
-        settingsDao = appDatabase.settingsDao();
+        currentSettings = new Settings(2);
 
-        settingsSubject = BehaviorSubject.create();
+        initSettings();
 
-        initialSettings = settingsDao.getSettings();
-
-        settingsSubject.onNext(initialSettings);
-
-        Disposable disposable = settingsSubject
-                .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(updateSettings ->{
-                                    settingsDao.update(updateSettings);
-                                });
-
-
-
+        sw_encrypt.setChecked(currentSettings.encrypt);
         sw_interval.setChecked(currentSettings.slowFastInterval);
         sw_location.setChecked(currentSettings.coarseFineAccuracy);
-        sw_encrypt.setChecked(currentSettings.encrypt);
 
         sw_interval.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 currentSettings.slowFastInterval = sw_interval.isChecked();
-
-                settingsSubject.onNext(currentSettings);
+                saveSettings();
             }
         });
 
@@ -90,8 +81,7 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 currentSettings.coarseFineAccuracy = sw_location.isChecked();
-
-                settingsSubject.onNext(currentSettings);
+                saveSettings();
             }
         });
 
@@ -100,9 +90,62 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 currentSettings.encrypt = sw_encrypt.isChecked();
-
-                settingsSubject.onNext(currentSettings);
+                saveSettings();
             }
         });
+
     }
+
+    private void saveSettings() {
+        databaseObservable = Observable.create(emitter -> {
+            appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
+            settingsDao = appDatabase.settingsDao();
+
+            settingsDao.update(currentSettings);
+
+            emitter.onNext(settingsDao.getSettingsById(2));
+            emitter.onComplete();
+        });
+
+        disposable = databaseObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s ->{
+                    currentSettings = s;
+
+                    sw_encrypt.setChecked(s.encrypt);
+                    sw_interval.setChecked(s.slowFastInterval);
+                    sw_location.setChecked(s.coarseFineAccuracy);
+                });
+    }
+
+    private void initSettings() {
+        databaseObservable = Observable.create(emitter -> {
+            appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
+            settingsDao = appDatabase.settingsDao();
+
+            Settings s = settingsDao.getSettingsById(2);
+
+            if (s == null){
+                s = currentSettings;
+                settingsDao.insert(s);
+            }
+            else{
+                currentSettings = s;
+            }
+
+            emitter.onNext(s);
+            emitter.onComplete();
+        });
+
+        disposable = databaseObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s ->{
+                    sw_encrypt.setChecked(s.encrypt);
+                    sw_interval.setChecked(s.slowFastInterval);
+                    sw_location.setChecked(s.coarseFineAccuracy);
+                });
+    }
+
 }
