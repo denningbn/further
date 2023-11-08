@@ -53,6 +53,6 @@ public class Settings {
     }
 
     public String toString(){
-       return ("ID: " + id + "\nEncrypt: " + encrypt + "\nInterval: " + slowFastInterval+ "\nAccuracy: " + slowFastInterval);
+       return ("ID: " + id + "\nEncrypt: " + encrypt + "\nAccuracy: " + coarseFineAccuracy + "\nInterval: " + slowFastInterval);
     }
 }
