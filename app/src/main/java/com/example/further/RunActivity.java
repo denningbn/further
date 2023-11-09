@@ -1,5 +1,7 @@
 package com.example.further;
 
+import static java.lang.Math.abs;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -22,6 +24,12 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnSuccessListener;
+import java.lang.Math;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class RunActivity extends AppCompatActivity {
 
@@ -50,11 +58,18 @@ public class RunActivity extends AppCompatActivity {
 
     Button b_pause, b_end;
 
+    Observable<Settings> settingsObservable;
+    Disposable disposable;
+
+    AppDatabase appDatabase;
+
+    SettingsDAO settingsDao;
+
+    Settings settings;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        startPausedRun = "Start Paused Run";
-        pauseRun = "Pause Run";
         setContentView(R.layout.activity_run);
 
         //ui elements
@@ -63,6 +78,9 @@ public class RunActivity extends AppCompatActivity {
 
         b_end = findViewById(R.id.b_end);
         b_pause = findViewById(R.id.b_pause);
+
+        startPausedRun = "Start Paused Run";
+        pauseRun = "Pause Run";
 
         b_pause.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,6 +101,8 @@ public class RunActivity extends AppCompatActivity {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        getSettings();
+
         //by default everything is set to true
         trackingLocation = true;
         coarseFineAccuracy = true;
@@ -92,12 +112,6 @@ public class RunActivity extends AppCompatActivity {
 
         first = new LocationNode(null);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null){
-            coarseFineAccuracy = extras.getBoolean("coarseFineAccuracy");
-            slowFastInterval = extras.getBoolean("slowFastInterval");
-            encrypt = extras.getBoolean("encrypt");
-        }
 
         locationCallback = new LocationCallback() {
             @Override
@@ -183,27 +197,28 @@ public class RunActivity extends AppCompatActivity {
     }
 
     private void saveRun(){
-        LocationNode<Location> iter = first;
+        double distance = getTotalDistance();
 
-        while (iter != null)
-        {
-            //TODO
-            //add all of the location data to the sql database
-        }
+        //TODO
+        //implement room database insert
+    }
+
+    private void insertRunIntoDatabase(){
+
     }
 
     private LocationRequest createLocReq(){
         int priority;
         long interval;
 
-        if (coarseFineAccuracy){
+        if (settings.coarseFineAccuracy){
             priority = Priority.PRIORITY_HIGH_ACCURACY;
         }
         else{
             priority = Priority.PRIORITY_LOW_POWER;
         }
 
-        if (slowFastInterval){
+        if (settings.slowFastInterval){
             interval = 5 * 1000;
         }
         else{
@@ -224,5 +239,49 @@ public class RunActivity extends AppCompatActivity {
 
     private void stopLocationUpdates() {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
+
+    private double getDistanceBetweenTwoPoints(Location loc1, Location loc2){
+        if (loc2 == null){
+            return 0.0;
+        }
+        double lat1 =loc1.getLatitude();
+        double lon1 = loc1.getLongitude();
+
+        double lat2 = loc2.getLatitude();
+        double lon2 = loc2.getLongitude();
+
+        return abs((lat1 - lat2) / (lon1 - lon2));
+    }
+
+    private double getTotalDistance(){
+        LocationNode<Location> iter = first;
+        double sumDistance = 0.0;
+
+        while (iter.getNext() != null){
+            sumDistance += getDistanceBetweenTwoPoints(iter.getData(), (Location) iter.getNext().getData());
+            iter = iter.getNext();
+        }
+
+        return sumDistance;
+    }
+
+    public void getSettings(){
+        settingsObservable = Observable.create(emitter -> {
+            appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
+            settingsDao = appDatabase.settingsDao();
+
+            Settings s = settingsDao.getSettingsById(2);
+
+            emitter.onNext(s);
+            emitter.onComplete();
+        });
+
+        disposable = settingsObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+                    settings = s;
+                });
     }
 }

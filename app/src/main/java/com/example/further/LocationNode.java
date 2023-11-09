@@ -13,11 +13,11 @@ public class LocationNode<Location> {
         this.length = 0;
     }
     public Location getData(){
-        return this.data;
+        return (Location) this.data;
     }
 
-    public Location getNext(){
-        return (Location) this.next;
+    public LocationNode getNext(){
+        return  this.next;
     }
 
     public int getLength(){
