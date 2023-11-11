@@ -34,7 +34,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class RunActivity extends AppCompatActivity {
 
     private static final int PERMISSIONS_FINE_LOCATION = 99;
-    TextView tv_location, tv_node;
+    TextView tv_location, tv_node, tv_settings, tv_runid;
 
     LocationRequest locationRequest;
 
@@ -52,6 +52,7 @@ public class RunActivity extends AppCompatActivity {
 
     //runtime location object storage
     private LocationNode first;
+    private LocationNode last;
 
     private boolean paused;
     private String startPausedRun, pauseRun;
@@ -59,13 +60,18 @@ public class RunActivity extends AppCompatActivity {
     Button b_pause, b_end;
 
     Observable<Settings> settingsObservable;
-    Disposable disposable;
+    Observable<Run> runObservable;
+    Disposable disposable, runDisposable;
 
     AppDatabase appDatabase;
 
     SettingsDAO settingsDao;
 
-    Settings settings;
+    RunDAO runDao;
+
+    Settings currentSettings;
+
+    double distance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +81,8 @@ public class RunActivity extends AppCompatActivity {
         //ui elements
         tv_location = findViewById(R.id.tv_location);
         tv_node = findViewById(R.id.tv_node_count);
+        tv_settings = findViewById(R.id.tv_settings);
+        tv_runid = findViewById(R.id.tv_runid);
 
         b_end = findViewById(R.id.b_end);
         b_pause = findViewById(R.id.b_pause);
@@ -101,12 +109,9 @@ public class RunActivity extends AppCompatActivity {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        currentSettings = new Settings();
         getSettings();
 
-        //by default everything is set to true
-        trackingLocation = true;
-        coarseFineAccuracy = true;
-        slowFastInterval = true;
 
         locationRequest = createLocReq();
 
@@ -126,7 +131,7 @@ public class RunActivity extends AppCompatActivity {
                 }
                 for (Location location : locationResult.getLocations()) {
                     updateGPS();
-                    first.addNode(location);
+                    addLocation(location);
                     testNode();
                 }
             }
@@ -197,13 +202,30 @@ public class RunActivity extends AppCompatActivity {
     }
 
     private void saveRun(){
-        double distance = getTotalDistance();
 
         //TODO
         //implement room database insert
-    }
 
-    private void insertRunIntoDatabase(){
+        Run run = new Run(distance);
+
+        runObservable = Observable.create(emitter -> {
+            appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
+            runDao = appDatabase.runDao();
+
+            runDao.insert(run);
+
+
+            emitter.onNext(run);
+            emitter.onComplete();
+        });
+
+        runDisposable = runObservable
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(s -> {
+
+                });
+
 
     }
 
@@ -211,14 +233,14 @@ public class RunActivity extends AppCompatActivity {
         int priority;
         long interval;
 
-        if (settings.coarseFineAccuracy){
+        if (currentSettings.coarseFineAccuracy){
             priority = Priority.PRIORITY_HIGH_ACCURACY;
         }
         else{
             priority = Priority.PRIORITY_LOW_POWER;
         }
 
-        if (settings.slowFastInterval){
+        if (currentSettings.slowFastInterval){
             interval = 5 * 1000;
         }
         else{
@@ -245,25 +267,13 @@ public class RunActivity extends AppCompatActivity {
         if (loc2 == null){
             return 0.0;
         }
-        double lat1 =loc1.getLatitude();
+        double lat1 = loc1.getLatitude();
         double lon1 = loc1.getLongitude();
 
         double lat2 = loc2.getLatitude();
         double lon2 = loc2.getLongitude();
 
         return abs((lat1 - lat2) / (lon1 - lon2));
-    }
-
-    private double getTotalDistance(){
-        LocationNode<Location> iter = first;
-        double sumDistance = 0.0;
-
-        while (iter.getNext() != null){
-            sumDistance += getDistanceBetweenTwoPoints(iter.getData(), (Location) iter.getNext().getData());
-            iter = iter.getNext();
-        }
-
-        return sumDistance;
     }
 
     public void getSettings(){
@@ -281,7 +291,16 @@ public class RunActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-                    settings = s;
+                    currentSettings = s;
+                    tv_settings.setText(currentSettings.toString());
                 });
+    }
+
+    public void addLocation(Location location){
+        if (last != null) {
+            distance += getDistanceBetweenTwoPoints((Location) last.getData(), location);
+        }
+
+        first.addNode(location);
     }
 }

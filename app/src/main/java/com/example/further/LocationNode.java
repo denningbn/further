@@ -32,18 +32,18 @@ public class LocationNode<Location> {
         this.length = _length;
     }
 
-    public void addNode(Location _data){
+    public LocationNode<Location> addNode(Location _data){
         if (this == null){
-            return;
+            return null;
         }
 
         if (this.next == null){
             this.setNext(new LocationNode<Location>(_data));
-            return;
+            return next;
         }
         else {
-            this.next.addNode(_data);
             this.setLength(this.getLength() + 1);
+            return this.next.addNode(_data);
         }
     }
 }
