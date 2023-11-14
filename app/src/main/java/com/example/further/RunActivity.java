@@ -25,6 +25,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnSuccessListener;
 import java.lang.Math;
+import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -51,8 +52,8 @@ public class RunActivity extends AppCompatActivity {
     public boolean encrypt;
 
     //runtime location object storage
-    private LocationNode first;
-    private LocationNode last;
+    private LocationNode<Location> first;
+    private LocationNode<Location> last;
 
     private boolean paused;
     private String startPausedRun, pauseRun;
@@ -71,8 +72,9 @@ public class RunActivity extends AppCompatActivity {
 
     Settings currentSettings;
 
-    double distance;
+    float dis;
 
+    public static final double EARTHRADIUS = 6371000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,8 +89,8 @@ public class RunActivity extends AppCompatActivity {
         b_end = findViewById(R.id.b_end);
         b_pause = findViewById(R.id.b_pause);
 
-        startPausedRun = "Start Paused Run";
-        pauseRun = "Pause Run";
+
+        initVars();
 
         b_pause.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,15 +109,7 @@ public class RunActivity extends AppCompatActivity {
             }
         });
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        currentSettings = new Settings();
-        getSettings();
-
-
-        locationRequest = createLocReq();
-
-        first = new LocationNode(null);
 
 
         locationCallback = new LocationCallback() {
@@ -123,36 +117,21 @@ public class RunActivity extends AppCompatActivity {
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
 
-                //Here is where we do stuff with the location.
-
                 if (locationResult == null) {
                     tv_location.setText("Location Results are Null");
                     return;
                 }
-                for (Location location : locationResult.getLocations()) {
-                    updateGPS();
-                    addLocation(location);
-                    testNode();
-                }
+
+                locLoop(locationResult.getLocations());
             }
         };
 
-        if (trackingLocation) {
-            startLocationUpdates();
-        }
-
+        initTracking();
         updateGPS();
     }
 
     private void startLocationUpdates() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
@@ -187,7 +166,9 @@ public class RunActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null){
-                        tv_location.setText(location.toString());
+                        //tv_location.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
+                        tv_location.setText("Accuracy: " + location.getAccuracy());
+
                     }
                     else {
                         tv_location.setText("Location is Null as this is not a real phone.");
@@ -206,7 +187,7 @@ public class RunActivity extends AppCompatActivity {
         //TODO
         //implement room database insert
 
-        Run run = new Run(distance);
+        Run run = new Run(dis);
 
         runObservable = Observable.create(emitter -> {
             appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
@@ -263,20 +244,7 @@ public class RunActivity extends AppCompatActivity {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
-    private double getDistanceBetweenTwoPoints(Location loc1, Location loc2){
-        if (loc2 == null){
-            return 0.0;
-        }
-        double lat1 = loc1.getLatitude();
-        double lon1 = loc1.getLongitude();
-
-        double lat2 = loc2.getLatitude();
-        double lon2 = loc2.getLongitude();
-
-        return abs((lat1 - lat2) / (lon1 - lon2));
-    }
-
-    public void getSettings(){
+public void getSettings(){
         settingsObservable = Observable.create(emitter -> {
             appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
             settingsDao = appDatabase.settingsDao();
@@ -296,11 +264,51 @@ public class RunActivity extends AppCompatActivity {
                 });
     }
 
-    public void addLocation(Location location){
-        if (last != null) {
-            distance += getDistanceBetweenTwoPoints((Location) last.getData(), location);
-        }
-
-        first.addNode(location);
+    private void addLocation(Location location){
+        last = first.addNode(location);
     }
+
+    private void initVars(){
+        //initiate all variables at the beginning of the function
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        first = new LocationNode(null);
+
+        currentSettings = new Settings();
+        getSettings();
+
+        locationRequest = createLocReq();
+
+        dis = 0;
+
+        startPausedRun = "Start Paused Run";
+        pauseRun = "Pause Run";
+    }
+
+    private void initTracking(){
+        if (trackingLocation) {
+            startLocationUpdates();
+        }
+    }
+
+    private void locLoop(List<Location> locationsGotten){
+        for (Location location : locationsGotten) {
+            updateGPS();
+            addLocation(location);
+            if ((last.getData() != null) & (last.getPrev().getData() != null)) {
+                //dis += getDistanceBetweenTwoPoints(last.getPrev().getData(), last.getData());
+
+                double prevLat = last.getPrev().getData().getLatitude();
+                double prevLon = last.getPrev().getData().getLongitude();
+                double lastLat = last.getData().getLatitude();
+                double lastLon = last.getData().getLongitude();
+
+                dis += last.getData().distanceTo(last.getPrev().getData());
+
+                tv_runid.setText(Float.toString(dis));
+            }
+
+            testNode();
+        }
+    }
+
 }

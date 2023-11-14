@@ -4,6 +4,7 @@ import android.location.Location;
 
 public class LocationNode<Location> {
     private LocationNode<Location> next;
+    private LocationNode<Location> prev;
     private Location data;
     private int length;
 
@@ -23,6 +24,7 @@ public class LocationNode<Location> {
     public int getLength(){
         return this.length;
     }
+    public LocationNode<Location> getPrev(){ return this.prev;}
 
     public void setNext(LocationNode<Location> _next){
         this.next = _next;
@@ -32,6 +34,10 @@ public class LocationNode<Location> {
         this.length = _length;
     }
 
+    private void setPrev(LocationNode<Location> _prev){
+        this.prev = _prev;
+    }
+
     public LocationNode<Location> addNode(Location _data){
         if (this == null){
             return null;
@@ -39,6 +45,7 @@ public class LocationNode<Location> {
 
         if (this.next == null){
             this.setNext(new LocationNode<Location>(_data));
+            this.getNext().setPrev(this);
             return next;
         }
         else {
