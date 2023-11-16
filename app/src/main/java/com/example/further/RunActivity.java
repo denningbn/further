@@ -35,7 +35,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class RunActivity extends AppCompatActivity {
 
     private static final int PERMISSIONS_FINE_LOCATION = 99;
-    TextView tv_location, tv_node, tv_settings, tv_runid;
+    TextView tv_node, tv_runid;
 
     LocationRequest locationRequest;
 
@@ -45,11 +45,6 @@ public class RunActivity extends AppCompatActivity {
 
     public boolean trackingLocation;
     //bool to describe whether it's coarse/0 or fine/1
-    public boolean coarseFineAccuracy;
-    //bool to describe slow/0 or fast/0
-    public boolean slowFastInterval;
-
-    public boolean encrypt;
 
     //runtime location object storage
     private LocationNode<Location> first;
@@ -74,18 +69,13 @@ public class RunActivity extends AppCompatActivity {
 
     float dis;
 
-    public static final double EARTHRADIUS = 6371000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_run);
 
         //ui elements
-        tv_location = findViewById(R.id.tv_location);
-        tv_node = findViewById(R.id.tv_node_count);
-        tv_settings = findViewById(R.id.tv_settings);
         tv_runid = findViewById(R.id.tv_runid);
-
         b_end = findViewById(R.id.b_end);
         b_pause = findViewById(R.id.b_pause);
 
@@ -109,6 +99,14 @@ public class RunActivity extends AppCompatActivity {
             }
         });
 
+        b_end.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                stopLocationUpdates();
+                saveRun();
+            }
+        });
+
 
 
 
@@ -118,10 +116,8 @@ public class RunActivity extends AppCompatActivity {
                 super.onLocationResult(locationResult);
 
                 if (locationResult == null) {
-                    tv_location.setText("Location Results are Null");
                     return;
                 }
-
                 locLoop(locationResult.getLocations());
             }
         };
@@ -167,11 +163,11 @@ public class RunActivity extends AppCompatActivity {
                 public void onSuccess(Location location) {
                     if (location != null){
                         //tv_location.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
-                        tv_location.setText("Accuracy: " + location.getAccuracy());
+                        //tv_location.setText("Accuracy: " + location.getAccuracy());
 
                     }
                     else {
-                        tv_location.setText("Location is Null as this is not a real phone.");
+                        //tv_location.setText("Location is Null as this is not a real phone.");
                     }
                 }
             });
@@ -193,8 +189,9 @@ public class RunActivity extends AppCompatActivity {
             appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
             runDao = appDatabase.runDao();
 
-            runDao.insert(run);
+            long id = runDao.insert(run);
 
+            runDao.getRunById(id);
 
             emitter.onNext(run);
             emitter.onComplete();
@@ -204,7 +201,7 @@ public class RunActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-
+                    tv_runid.setText(s.toString());
                 });
 
 
@@ -231,9 +228,6 @@ public class RunActivity extends AppCompatActivity {
         return new LocationRequest.Builder(priority, interval).setMinUpdateIntervalMillis(5000).build();
     }
 
-    private void testNode(){
-        tv_node.setText(Integer.toString(first.getLength()));
-    }
     @Override
     protected void onPause() {
         super.onPause();
@@ -260,7 +254,6 @@ public void getSettings(){
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
                     currentSettings = s;
-                    tv_settings.setText(currentSettings.toString());
                 });
     }
 
@@ -282,6 +275,8 @@ public void getSettings(){
 
         startPausedRun = "Start Paused Run";
         pauseRun = "Pause Run";
+
+        trackingLocation = true;
     }
 
     private void initTracking(){
@@ -306,8 +301,6 @@ public void getSettings(){
 
                 tv_runid.setText(Float.toString(dis));
             }
-
-            testNode();
         }
     }
 

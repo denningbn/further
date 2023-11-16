@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "RunTable")
 public class Run {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     public long id;
     @ColumnInfo(name = "distance")
     private double distance;
@@ -18,6 +18,7 @@ public class Run {
 
     public Run(double _distance){
         distance = _distance;
+        id = 4;
         bestOneMile = 0;
         bestOneKilometer = 0;
     }
