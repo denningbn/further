@@ -3,6 +3,7 @@ package com.example.further;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import java.time.LocalDate;
 
 @Entity(tableName = "RunTable")
 public class Run {
@@ -16,18 +17,31 @@ public class Run {
     @ColumnInfo(name = "bestOneKilometer")
     private double bestOneKilometer;
 
+
+    @ColumnInfo(name = "dateMonth")
+    private int dateMonth;
+
+    @ColumnInfo(name = "dateYear")
+    private int dateYear;
+
+
+    @ColumnInfo(name = "dateDay")
+    private int dateDay;
+
     public Run(double _distance){
         distance = _distance;
         id = 4;
         bestOneMile = 0;
         bestOneKilometer = 0;
+        dateMonth = LocalDate.now().getMonthValue();
+        dateDay = LocalDate.now().getDayOfMonth();
+        dateYear = LocalDate.now().getYear();
     }
 
     public Run()
     {
 
     }
-
     public long getId(){
         return id;
     }
@@ -57,6 +71,33 @@ public class Run {
     public void setBestOneKilometer(double _bestOneKilometer){
         bestOneMile = _bestOneKilometer;
     }
+
+
+    public int getDateMonth() {
+        return dateMonth;
+    }
+
+
+    public int getDateDay() {
+        return dateDay;
+    }
+    public int getDateYear() {
+        return dateYear;
+    }
+
+    public void setDateMonth(int _dateMonth){
+        dateMonth = _dateMonth;
+    }
+
+    public void setDateDay(int _dateDay){
+        dateDay = _dateDay;
+    }
+
+    public void setDateYear(int _dateYear){
+        dateYear = _dateYear;
+    }
+
+
     public String toString(){
         return ("ID: " + id + "\nDistance: " + distance);
     }

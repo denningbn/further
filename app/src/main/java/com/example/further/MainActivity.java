@@ -26,12 +26,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> someActivityResultLauncher;
 
-    public boolean coarseFineAccuracy;
-    public boolean slowFastInterval;
-    public boolean encrypt;
 
     private Settings currentSettings;
-    private long settingsId;
 
     TextView tv_encrypt;
     Button b_encrypt;

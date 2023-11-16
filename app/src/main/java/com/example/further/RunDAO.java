@@ -6,6 +6,8 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import java.util.List;
+
 @Dao
 public interface RunDAO {
     @Insert
@@ -19,4 +21,7 @@ public interface RunDAO {
 
     @Update
     void update(Run run);
+
+    @Query("SELECT * FROM RunTable")
+    List<Run> getAllItems();
 }

@@ -162,12 +162,8 @@ public class RunActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(Location location) {
                     if (location != null){
-                        //tv_location.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
-                        //tv_location.setText("Accuracy: " + location.getAccuracy());
-
                     }
                     else {
-                        //tv_location.setText("Location is Null as this is not a real phone.");
                     }
                 }
             });
@@ -179,10 +175,6 @@ public class RunActivity extends AppCompatActivity {
     }
 
     private void saveRun(){
-
-        //TODO
-        //implement room database insert
-
         Run run = new Run(dis);
 
         runObservable = Observable.create(emitter -> {
@@ -203,8 +195,6 @@ public class RunActivity extends AppCompatActivity {
                 .subscribe(s -> {
                     tv_runid.setText(s.toString());
                 });
-
-
     }
 
     private LocationRequest createLocReq(){
@@ -238,7 +228,7 @@ public class RunActivity extends AppCompatActivity {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
-public void getSettings(){
+    public void getSettings(){
         settingsObservable = Observable.create(emitter -> {
             appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
             settingsDao = appDatabase.settingsDao();
@@ -290,18 +280,18 @@ public void getSettings(){
             updateGPS();
             addLocation(location);
             if ((last.getData() != null) & (last.getPrev().getData() != null)) {
-                //dis += getDistanceBetweenTwoPoints(last.getPrev().getData(), last.getData());
+                dis += (float) metersToMiles(last.getData().distanceTo(last.getPrev().getData()));
 
-                double prevLat = last.getPrev().getData().getLatitude();
-                double prevLon = last.getPrev().getData().getLongitude();
-                double lastLat = last.getData().getLatitude();
-                double lastLon = last.getData().getLongitude();
-
-                dis += last.getData().distanceTo(last.getPrev().getData());
-
-                tv_runid.setText(Float.toString(dis));
+                tv_runid.setText(Float.toString(roundDistance(dis)));
             }
         }
     }
 
+    private double metersToMiles(float meters){
+        return meters / 1609.34;
+    }
+
+    private float roundDistance(float value){
+        return Math.round(value) * 100 / 100f;
+    }
 }
