@@ -4,10 +4,11 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import java.time.LocalDate;
+import java.util.Date;
 
 @Entity(tableName = "RunTable")
 public class Run {
-    @PrimaryKey(autoGenerate = false)
+    @PrimaryKey(autoGenerate = true)
     public long id;
     @ColumnInfo(name = "distance")
     private double distance;
@@ -18,24 +19,19 @@ public class Run {
     private double bestOneKilometer;
 
 
-    @ColumnInfo(name = "dateMonth")
-    private int dateMonth;
-
-    @ColumnInfo(name = "dateYear")
-    private int dateYear;
+    @ColumnInfo(name = "pace")
+    private double pace;
 
 
-    @ColumnInfo(name = "dateDay")
-    private int dateDay;
+    @ColumnInfo(name = "insertionDate")
+    private long insertionDate;
 
     public Run(double _distance){
         distance = _distance;
-        id = 4;
         bestOneMile = 0;
         bestOneKilometer = 0;
-        dateMonth = LocalDate.now().getMonthValue();
-        dateDay = LocalDate.now().getDayOfMonth();
-        dateYear = LocalDate.now().getYear();
+        pace = 0;
+        insertionDate = new Date().getTime();
     }
 
     public Run()
@@ -73,31 +69,26 @@ public class Run {
     }
 
 
-    public int getDateMonth() {
-        return dateMonth;
+    public String dateToString(){
+        Date date = new Date(insertionDate);
+        return date.toString();
     }
 
-
-    public int getDateDay() {
-        return dateDay;
-    }
-    public int getDateYear() {
-        return dateYear;
+    public Double getPace(){
+        return this.pace;
     }
 
-    public void setDateMonth(int _dateMonth){
-        dateMonth = _dateMonth;
+    public void setPace(Double _pace){
+        this.pace = _pace;
     }
 
-    public void setDateDay(int _dateDay){
-        dateDay = _dateDay;
+    public long getInsertionDate() {
+        return insertionDate;
     }
 
-    public void setDateYear(int _dateYear){
-        dateYear = _dateYear;
+    public void setInsertionDate(long _insertionDate) {
+        this.insertionDate = _insertionDate;
     }
-
-
     public String toString(){
         return ("ID: " + id + "\nDistance: " + distance);
     }

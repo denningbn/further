@@ -183,9 +183,9 @@ public class RunActivity extends AppCompatActivity {
 
             long id = runDao.insert(run);
 
-            runDao.getRunById(id);
+            Run run1 = runDao.getRunById(id);
 
-            emitter.onNext(run);
+            emitter.onNext(run1);
             emitter.onComplete();
         });
 

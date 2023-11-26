@@ -11,6 +11,9 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.disposables.Disposable;
@@ -32,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     TextView tv_encrypt;
     Button b_encrypt;
 
-    private Observable<Settings> databaseObservable;
+    private Observable<List<Run>> databaseObservable;
     private Disposable disposable;
 
     @Override
@@ -94,7 +97,12 @@ public class MainActivity extends AppCompatActivity {
                 settingsDao.insert(currentSettings);
             }
 
-            emitter.onNext(settingsDao.getSettingsById(2));
+
+            RunDAO runDao = appDatabase.runDao();
+
+
+            //emitter.onNext(settingsDao.getSettingsById(2));
+            emitter.onNext(runDao.getSortedRuns());
             emitter.onComplete();
         });
 
@@ -102,7 +110,11 @@ public class MainActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-                    tv_encrypt.setText(s.toString());
+
+                    ArrayList<Run> rList = new ArrayList<>();
+
+                    rList.addAll(s);
+                    tv_encrypt.setText(Integer.toString((rList.size())));
                 });
     }
 

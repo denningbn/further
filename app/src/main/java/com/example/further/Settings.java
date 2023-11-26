@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "Settings")
 public class Settings {
-    @PrimaryKey()
+    @PrimaryKey(autoGenerate = false)
     public long id;
 
     @ColumnInfo(name = "coarseFineAccuracy")
