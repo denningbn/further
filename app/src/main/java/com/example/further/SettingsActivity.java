@@ -25,7 +25,6 @@ public class SettingsActivity extends AppCompatActivity {
     @SuppressLint("UseSwitchCompatOrMaterialCode")
     Switch sw_interval, sw_location, sw_encrypt;
 
-    Button b_settings;
 
     TextView tv_match;
 
@@ -56,7 +55,6 @@ public class SettingsActivity extends AppCompatActivity {
         sw_location = findViewById(R.id.sw_location);
         sw_encrypt = findViewById(R.id.sw_encrypt);
 
-        b_settings = findViewById(R.id.b_settings);
 
         tv_match = findViewById(R.id.tv_match);
 

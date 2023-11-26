@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 
 @Entity(tableName = "RunTable")
@@ -71,7 +72,18 @@ public class Run {
 
     public String dateToString(){
         Date date = new Date(insertionDate);
-        return date.toString();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH) + 1; // Month is zero-based
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int hour = calendar.get(Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(Calendar.MINUTE);
+
+        String foo = month + "/" + day + "/" + year + "---" + hour + ':' + minute;
+        return foo;
     }
 
     public Double getPace(){
