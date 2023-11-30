@@ -25,6 +25,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnSuccessListener;
 import java.lang.Math;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 
@@ -67,8 +69,8 @@ public class RunActivity extends AppCompatActivity {
 
     Settings currentSettings;
 
-    float dis;
-    float pace;
+    double dis;
+    double pace;
     boolean trackingLocation;
 
     @Override
@@ -178,9 +180,9 @@ public class RunActivity extends AppCompatActivity {
 
     private void saveRun(){
         setPace();
-        dis = (float)Math.round((dis * 10000) / 10000);
+        dis = roundTo(dis, 3);
 
-        pace = roundDistance(pace);
+        pace = roundTo(pace, 3);
         Run run = new Run(dis, pace);
 
         runObservable = Observable.create(emitter -> {
@@ -256,9 +258,9 @@ public class RunActivity extends AppCompatActivity {
     private void addLocation(Location location){
         last = first.addNode(location);
 
-        float distance = (float)Math.round((dis * 1000) / 1000);
+        //double distance = roundTo(dis, 3);
 
-        tv_runid.setText(Float.toString(distance));
+        //tv_runid.setText(Double.toString(distance));
     }
 
 
@@ -294,7 +296,7 @@ public class RunActivity extends AppCompatActivity {
             if ((last.getData() != null) & (last.getPrev().getData() != null)) {
                 dis += (float) metersToMiles(last.getData().distanceTo(last.getPrev().getData()));
 
-                //tv_runid.setText(Float.toString(roundDistance(dis)));
+                tv_runid.setText(Double.toString(roundTo(dis,3)));
             }
         }
     }
@@ -303,8 +305,13 @@ public class RunActivity extends AppCompatActivity {
         return meters / 1609.34;
     }
 
-    private float roundDistance(float value){
-        return Math.round(value) * 100 / 100f;
+    private double roundTo(double value,int decimalPlaces){
+
+        BigDecimal originalBigDecimal = new BigDecimal(Double.toString(value));
+        BigDecimal roundedBigDecimal = originalBigDecimal.setScale(decimalPlaces, RoundingMode.DOWN);
+
+        return roundedBigDecimal.doubleValue();
+
     }
 
     private void setPace() {
