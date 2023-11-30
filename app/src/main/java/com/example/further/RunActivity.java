@@ -25,6 +25,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnSuccessListener;
 import java.lang.Math;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -43,7 +44,6 @@ public class RunActivity extends AppCompatActivity {
 
     private LocationCallback locationCallback;
 
-    public boolean trackingLocation;
     //bool to describe whether it's coarse/0 or fine/1
 
     //runtime location object storage
@@ -68,6 +68,8 @@ public class RunActivity extends AppCompatActivity {
     Settings currentSettings;
 
     float dis;
+    float pace;
+    boolean trackingLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,7 +177,11 @@ public class RunActivity extends AppCompatActivity {
     }
 
     private void saveRun(){
-        Run run = new Run(dis);
+        setPace();
+        dis = (float)Math.round((dis * 10000) / 10000);
+
+        pace = roundDistance(pace);
+        Run run = new Run(dis, pace);
 
         runObservable = Observable.create(emitter -> {
             appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
@@ -249,7 +255,12 @@ public class RunActivity extends AppCompatActivity {
 
     private void addLocation(Location location){
         last = first.addNode(location);
+
+        float distance = (float)Math.round((dis * 1000) / 1000);
+
+        tv_runid.setText(Float.toString(distance));
     }
+
 
     private void initVars(){
         //initiate all variables at the beginning of the function
@@ -262,6 +273,7 @@ public class RunActivity extends AppCompatActivity {
         locationRequest = createLocReq();
 
         dis = 0;
+        pace = 0;
 
         startPausedRun = "Start Paused Run";
         pauseRun = "Pause Run";
@@ -282,7 +294,7 @@ public class RunActivity extends AppCompatActivity {
             if ((last.getData() != null) & (last.getPrev().getData() != null)) {
                 dis += (float) metersToMiles(last.getData().distanceTo(last.getPrev().getData()));
 
-                tv_runid.setText(Float.toString(roundDistance(dis)));
+                //tv_runid.setText(Float.toString(roundDistance(dis)));
             }
         }
     }
@@ -293,5 +305,19 @@ public class RunActivity extends AppCompatActivity {
 
     private float roundDistance(float value){
         return Math.round(value) * 100 / 100f;
+    }
+
+    private void setPace() {
+        long first_time = 0;
+        long last_time = 0;
+        if ((first != null) && (last != null))
+        {
+            Location second = (Location) first.getNext().getData();
+            first_time = second.getTime();
+            last_time = last.getData().getTime();
+
+            pace = (dis / Math.round(last_time - first_time));
+        }
+
     }
 }

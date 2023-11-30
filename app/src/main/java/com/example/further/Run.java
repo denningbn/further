@@ -21,17 +21,18 @@ public class Run {
 
 
     @ColumnInfo(name = "pace")
-    private double pace;
+    private float pace;
+
 
 
     @ColumnInfo(name = "insertionDate")
     private long insertionDate;
 
-    public Run(double _distance){
+    public Run(double _distance, float _pace){
         distance = _distance;
         bestOneMile = 0;
         bestOneKilometer = 0;
-        pace = 0;
+        pace = _pace;
         insertionDate = new Date().getTime();
     }
 
@@ -86,11 +87,11 @@ public class Run {
         return foo;
     }
 
-    public Double getPace(){
+    public Float getPace(){
         return this.pace;
     }
 
-    public void setPace(Double _pace){
+    public void setPace(float _pace){
         this.pace = _pace;
     }
 
