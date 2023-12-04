@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,9 +71,12 @@ public class RunActivity extends AppCompatActivity {
     Settings currentSettings;
 
     double dis;
-    double pace;
+    String pace;
     boolean trackingLocation;
 
+    int time;
+
+    ImageView dg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +86,7 @@ public class RunActivity extends AppCompatActivity {
         tv_runid = findViewById(R.id.tv_runid);
         b_end = findViewById(R.id.b_end);
         b_pause = findViewById(R.id.b_pause);
+        dg = findViewById(R.id.img_dgmode);
 
 
         initVars();
@@ -179,10 +184,10 @@ public class RunActivity extends AppCompatActivity {
     }
 
     private void saveRun(){
-        setPace();
         dis = roundTo(dis, 3);
+        setTime();
+        paceCalculation();
 
-        pace = roundTo(pace, 3);
         Run run = new Run(dis, pace);
 
         runObservable = Observable.create(emitter -> {
@@ -201,7 +206,7 @@ public class RunActivity extends AppCompatActivity {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
-                    tv_runid.setText(s.toString());
+                        tv_runid.setText(s.toString());
                 });
     }
 
@@ -252,15 +257,19 @@ public class RunActivity extends AppCompatActivity {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(s -> {
                     currentSettings = s;
+
+                    if (currentSettings.dgMode){
+                        dg.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        dg.setVisibility(View.INVISIBLE);
+                    }
+
                 });
     }
 
     private void addLocation(Location location){
         last = first.addNode(location);
-
-        //double distance = roundTo(dis, 3);
-
-        //tv_runid.setText(Double.toString(distance));
     }
 
 
@@ -275,12 +284,12 @@ public class RunActivity extends AppCompatActivity {
         locationRequest = createLocReq();
 
         dis = 0;
-        pace = 0;
 
         startPausedRun = "Start Paused Run";
         pauseRun = "Pause Run";
 
         trackingLocation = true;
+
     }
 
     private void initTracking(){
@@ -294,9 +303,23 @@ public class RunActivity extends AppCompatActivity {
             updateGPS();
             addLocation(location);
             if ((last.getData() != null) & (last.getPrev().getData() != null)) {
-                dis += (float) metersToMiles(last.getData().distanceTo(last.getPrev().getData()));
+                double distanceBetweenPoints = metersToMiles(last.getData().distanceTo(last.getPrev().getData()));
+                double speed = last.getData().getSpeed();
 
-                tv_runid.setText(Double.toString(roundTo(dis,3)));
+                distanceBetweenPoints = roundTo(distanceBetweenPoints, 3);
+
+                if ((distanceBetweenPoints >0.001) && (speed > 0)) {
+                    dis += distanceBetweenPoints;
+                    roundTo(dis, 2);
+                }
+
+            }
+            if (currentSettings.dgMode)
+            {
+                tv_runid.setText("Not far enough.");
+            }
+            else {
+                tv_runid.setText(Double.toString(dis));
             }
         }
     }
@@ -314,17 +337,35 @@ public class RunActivity extends AppCompatActivity {
 
     }
 
-    private void setPace() {
+    private void setTime() {
         long first_time = 0;
         long last_time = 0;
+        long total_time = 0;
         if ((first != null) && (last != null))
         {
             Location second = (Location) first.getNext().getData();
             first_time = second.getTime();
             last_time = last.getData().getTime();
 
-            pace = (dis / Math.round(last_time - first_time));
+            total_time = last_time - first_time;
+
+            time = (int) total_time;
         }
 
+    }
+
+    private void paceCalculation() {
+
+        double minutes = 0;
+        double seconds = 0;
+
+        time = time / 1000;
+
+        minutes = time / 60;
+        seconds = time % 60;
+
+        String result = String.format("%d:%02d", (int) minutes, (int) seconds);
+
+        pace = result;
     }
 }

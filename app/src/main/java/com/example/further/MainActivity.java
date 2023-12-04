@@ -32,8 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Settings currentSettings;
 
-    TextView tv_encrypt;
-    Button b_encrypt;
 
     private Observable<List<Run>> databaseObservable;
     private Disposable disposable;
@@ -46,11 +44,8 @@ public class MainActivity extends AppCompatActivity {
         startRun = findViewById(R.id.start_run);
         viewHistory = findViewById(R.id.view_history);
         viewSettings = findViewById(R.id.view_settings);
-        viewCycles = findViewById(R.id.view_cycles);
 
 
-        tv_encrypt = findViewById(R.id.tv_encrypt);
-        b_encrypt = findViewById(R.id.b_encrypt);
 
         initSettings();
 
@@ -71,16 +66,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
 
             startActivity(intent);
-        });
-
-        viewCycles.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, CycleActivity.class);
-            startActivity(intent);
-        });
-
-        b_encrypt.setOnClickListener(v -> {
-            initSettings();
-            tv_encrypt.setText(currentSettings.toString());
         });
 
     }
@@ -114,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
                     ArrayList<Run> rList = new ArrayList<>();
 
                     rList.addAll(s);
-                    tv_encrypt.setText(Integer.toString((rList.size())));
                 });
     }
 

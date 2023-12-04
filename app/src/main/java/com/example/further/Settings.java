@@ -18,12 +18,16 @@ public class Settings {
     @ColumnInfo(name = "encrypt")
     public boolean encrypt;
 
+    @ColumnInfo(name = "dgMode")
+    public boolean dgMode;
+
 
     public Settings(){
         id = 1;
         coarseFineAccuracy = true;
         slowFastInterval = true;
         encrypt = true;
+        dgMode = false;
     }
 
 
@@ -32,6 +36,7 @@ public class Settings {
         coarseFineAccuracy = true;
         slowFastInterval = true;
         encrypt = true;
+        dgMode = false;
     }
 
 
@@ -50,6 +55,15 @@ public class Settings {
     }
     public void setEncrypt(boolean encrypt){
         this.encrypt=encrypt;
+    }
+
+    public void setDgMode(boolean _dgMode)
+    {
+        this.dgMode = _dgMode;
+    }
+    public boolean getDgMode()
+    {
+        return dgMode;
     }
 
     public String toString(){

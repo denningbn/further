@@ -21,12 +21,12 @@ public class SettingsActivity extends AppCompatActivity {
     boolean slowFastInterval = true;
 
     boolean encrypt = true;
+    boolean dgMode = false;
 
     @SuppressLint("UseSwitchCompatOrMaterialCode")
-    Switch sw_interval, sw_location, sw_encrypt;
+    Switch sw_interval, sw_location, sw_encrypt, sw_dgmode;
 
 
-    TextView tv_match;
 
     private BehaviorSubject<Settings> settingsSubject;
 
@@ -54,9 +54,7 @@ public class SettingsActivity extends AppCompatActivity {
         sw_interval = findViewById(R.id.sw_interval);
         sw_location = findViewById(R.id.sw_location);
         sw_encrypt = findViewById(R.id.sw_encrypt);
-
-
-        tv_match = findViewById(R.id.tv_match);
+        sw_dgmode = findViewById(R.id.sw_dgmode);
 
         currentSettings = new Settings(2);
 
@@ -65,6 +63,7 @@ public class SettingsActivity extends AppCompatActivity {
         sw_encrypt.setChecked(currentSettings.encrypt);
         sw_interval.setChecked(currentSettings.slowFastInterval);
         sw_location.setChecked(currentSettings.coarseFineAccuracy);
+        sw_dgmode.setChecked(currentSettings.dgMode);
 
         sw_interval.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,6 +91,14 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        sw_dgmode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentSettings.dgMode = sw_dgmode.isChecked();
+                saveSettings();
+            }
+        });
+
     }
 
     private void saveSettings() {
@@ -114,6 +121,7 @@ public class SettingsActivity extends AppCompatActivity {
                     sw_encrypt.setChecked(s.encrypt);
                     sw_interval.setChecked(s.slowFastInterval);
                     sw_location.setChecked(s.coarseFineAccuracy);
+                    sw_dgmode.setChecked(s.dgMode);
                 });
     }
 
@@ -143,6 +151,7 @@ public class SettingsActivity extends AppCompatActivity {
                     sw_encrypt.setChecked(s.encrypt);
                     sw_interval.setChecked(s.slowFastInterval);
                     sw_location.setChecked(s.coarseFineAccuracy);
+                    sw_dgmode.setChecked(s.dgMode);
                 });
     }
 

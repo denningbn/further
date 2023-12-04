@@ -34,7 +34,7 @@ public class RV_RunAdapter extends RecyclerView.Adapter<RV_RunAdapter.MyViewHold
     public void onBindViewHolder(@NonNull RV_RunAdapter.MyViewHolder holder, int position) {
         holder.tv_date.setText(runArrayList.get(position).dateToString());
         holder.tv_distance.setText(Double.toString(runArrayList.get(position).getDistance()) + " Miles" );
-        holder.tv_pace.setText(Double.toString(runArrayList.get(position).getPace()));
+        holder.tv_pace.setText("Time: " + runArrayList.get(position).getPace());
     }
 
     @Override
