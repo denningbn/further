@@ -70,11 +70,13 @@ public class RunActivity extends AppCompatActivity {
 
     Settings currentSettings;
 
-    double dis;
+    double dis, metersInMile;
     String pace;
     boolean trackingLocation;
 
     int time;
+
+    double[] currentBests;
 
     ImageView dg;
     @Override
@@ -187,6 +189,7 @@ public class RunActivity extends AppCompatActivity {
         dis = roundTo(dis, 3);
         setTime();
         paceCalculation();
+        runSplitLoop();
 
         Run run = new Run(dis, pace);
 
@@ -290,6 +293,16 @@ public class RunActivity extends AppCompatActivity {
 
         trackingLocation = true;
 
+        metersInMile = 1609.3;
+
+        currentBests = initBests();
+    }
+
+    private double[] initBests()
+    {
+        double[] gottenBests = {-1, -1, -1, -1, -1, -1, -1, -1};
+
+        return gottenBests;
     }
 
     private void initTracking(){
@@ -368,4 +381,64 @@ public class RunActivity extends AppCompatActivity {
 
         pace = result;
     }
+
+    private double splitCalculation(LocationNode<Location> node, double distance)
+    {
+        double currentDistance = 0;
+        LocationNode<Location> currentNode = node;
+        LocationNode<Location> next = null;
+
+        while (currentNode.getNext() != null)
+        {
+            next = currentNode.getNext();
+            currentDistance += currentNode.getData().distanceTo(next.getData());
+
+            currentDistance = metersToMiles((float) currentDistance);
+
+            if (currentDistance >= distance)
+            {
+               return (next.getData().getTime() - node.getData().getTime());
+            }
+            currentNode = currentNode.getNext();
+        }
+        return -1; //did not run this distance, so return -1 to show it's not valid
+    }
+
+    private void runSplitLoop()
+    {
+        LocationNode<Location> iter = first.getNext();
+
+        while (iter.getNext() != null)
+        {
+            runSplitCalculation(iter);
+        }
+    }
+
+    private void runSplitCalculation(LocationNode<Location> iter)
+    {
+        double[] bests = new double[8];
+        bests[0] = splitCalculation(iter, 1 * metersInMile);
+        bests[1] = splitCalculation(iter, 5 * metersInMile);
+        bests[2] = splitCalculation(iter, 10 * metersInMile);
+        bests[3]= splitCalculation(iter, 13.1 * metersInMile);
+        bests[4]= splitCalculation(iter, 26.2 * metersInMile);
+
+        bests[5]= splitCalculation(iter, 1000);
+        bests[6]= splitCalculation(iter, 5000);
+        bests[7]= splitCalculation(iter, 10000);
+
+        compareBests(bests);
+    }
+
+    private void compareBests(double[] calculatedBests)
+    {
+        for (int i = 0; i < calculatedBests.length; i++)
+        {
+            if ((calculatedBests[i] < currentBests[i]) && (calculatedBests[i] != -1))
+            {
+                currentBests[i] = calculatedBests[i]; // if the calculated best is lower than the current best and is not -1, it's the new currentbest
+            }
+        }
+    }
+
 }
