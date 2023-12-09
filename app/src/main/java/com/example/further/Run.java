@@ -23,6 +23,8 @@ public class Run {
     @ColumnInfo(name = "pace")
     private String pace;
 
+    @ColumnInfo(name ="coordinates")
+    private double[][] coordinates;
 
 
     @ColumnInfo(name = "insertionDate")
@@ -34,6 +36,7 @@ public class Run {
         bestOneKilometer = 0;
         pace = _pace;
         insertionDate = new Date().getTime();
+
     }
 
     public Run()
@@ -104,5 +107,13 @@ public class Run {
     }
     public String toString(){
         return (distance + "\nTime: " + pace);
+    }
+    public double[][] getCoordinates(){
+        return coordinates;
+    }
+
+    public void setCoordinates(double[][] _coordinates)
+    {
+        this.coordinates = _coordinates;
     }
 }
