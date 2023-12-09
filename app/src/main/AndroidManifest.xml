@@ -15,6 +15,11 @@
         android:theme="@style/Theme.Further"
         tools:targetApi="31">
         <activity
+            android:name=".PersonalRecord"
+            android:exported="false"
+            android:label="@string/title_activity_personal_record"
+            android:theme="@style/Theme.Further" />
+        <activity
             android:name=".CycleActivity"
             android:exported="false" />
         <activity

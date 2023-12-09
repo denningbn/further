@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private AppDatabase appDatabase;
     private SettingsDAO settingsDao;
 
-    Button startRun, viewHistory, viewSettings, viewCycles;
+    Button startRun, viewHistory, viewSettings, viewCycles, viewPersonal;
 
     private ActivityResultLauncher<Intent> someActivityResultLauncher;
 
@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         startRun = findViewById(R.id.start_run);
         viewHistory = findViewById(R.id.view_history);
         viewSettings = findViewById(R.id.view_settings);
+        viewPersonal = findViewById(R.id.b_personal);
 
 
 
@@ -56,6 +57,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        viewPersonal.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, PersonalRecord.class);
+
+            startActivity(intent);
+        });
 
         viewHistory.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, HistoryActivity.class);

@@ -21,6 +21,9 @@ public class Settings {
     @ColumnInfo(name = "dgMode")
     public boolean dgMode;
 
+    @ColumnInfo(name = "bests")
+    public double[] bests;
+
 
     public Settings(){
         id = 1;
@@ -28,6 +31,7 @@ public class Settings {
         slowFastInterval = true;
         encrypt = true;
         dgMode = false;
+        bests = new double[]{-1, -1, -1, -1, -1, -1, -1, -1};
     }
 
 
@@ -37,6 +41,7 @@ public class Settings {
         slowFastInterval = true;
         encrypt = true;
         dgMode = false;
+        bests = new double[]{-1, -1, -1, -1, -1, -1, -1, -1};
     }
 
 
@@ -64,6 +69,16 @@ public class Settings {
     public boolean getDgMode()
     {
         return dgMode;
+    }
+
+    public double[] getBests()
+    {
+        return bests;
+    }
+
+    public void setBests(double[] _bests)
+    {
+        this.bests = _bests;
     }
 
     public String toString(){

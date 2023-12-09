@@ -6,168 +6,170 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tv_bestonemile"
+        android:id="@+id/t_bestOneM"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="84dp"
-        android:text="Best One Mile"
+        android:layout_marginTop="52dp"
+        android:text="Best One Mile:"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.218"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_bestfivemile"
+        android:id="@+id/t_bestFiveM"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="20dp"
         android:text="Best Five Mile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.225"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_bestonemile" />
+        app:layout_constraintTop_toBottomOf="@+id/t_bestOneM" />
 
     <TextView
-        android:id="@+id/tv_besttenmile"
+        android:id="@+id/t_bestTenM"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
         android:layout_marginTop="20dp"
         android:text="Best Ten Mile"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_bestfivemile" />
-
-    <TextView
-        android:id="@+id/tv_besthalfmarathon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="20dp"
-        android:text="Best Half Marathon"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_besttenmile" />
-
-    <TextView
-        android:id="@+id/tv_bestmarathon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="16dp"
-        android:text="Best marathon"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_besthalfmarathon" />
-
-    <TextView
-        android:id="@+id/tv_bestonekilometer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="56dp"
-        android:text="Best One Kilometer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_bestmarathon" />
-
-    <TextView
-        android:id="@+id/tv_bestfivekilometer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:text="Best Five Kilometer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_bestonekilometer" />
-
-    <TextView
-        android:id="@+id/tv_besttenkilometer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Best Ten Kilometer"
-        tools:layout_editor_absoluteX="28dp"
-        tools:layout_editor_absoluteY="437dp" />
-
-    <TextView
-        android:id="@+id/tv_bestonemileout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="84dp"
-        android:layout_marginEnd="136dp"
-        android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tv_bestonemile"
+        app:layout_constraintHorizontal_bias="0.214"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_bestFiveM" />
+
+    <TextView
+        android:id="@+id/t_bestHalfMar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="20dp"
+        android:text="Best Half Marathon:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_bestTenM" />
+
+    <TextView
+        android:id="@+id/t_bestMar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="20dp"
+        android:text="Best Marathon:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_bestHalfMar" />
+
+    <TextView
+        android:id="@+id/t_bestOneK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="20dp"
+        android:text="Best One Kilometer:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_bestMar" />
+
+    <TextView
+        android:id="@+id/t_bestFiveK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="20dp"
+        android:text="Best Five Kilometer:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_bestOneK" />
+
+    <TextView
+        android:id="@+id/t_bestTenK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="20dp"
+        android:text="Best Ten Kilometer:"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t_bestFiveK"
+        app:layout_constraintVertical_bias="0.002" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="52dp"
+        android:text="Haven't Run Yet!"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/t_bestOneM"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_bestfivemileout"
+        android:id="@+id/textView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:layout_marginEnd="132dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tv_bestfivemile"
-        app:layout_constraintTop_toBottomOf="@+id/tv_bestonemileout" />
+        android:layout_marginStart="72dp"
+        android:layout_marginTop="20dp"
+        android:text="Haven't Run Yet!"
+        app:layout_constraintStart_toEndOf="@+id/t_bestFiveM"
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
 
     <TextView
-        android:id="@+id/tv_besttenmileout"
+        android:id="@+id/textView12"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.187"
-        app:layout_constraintStart_toEndOf="@+id/tv_besttenmile"
-        app:layout_constraintTop_toBottomOf="@+id/tv_bestfivemileout" />
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="20dp"
+        android:text="Haven't Run Yet!"
+        app:layout_constraintStart_toEndOf="@+id/t_bestTenM"
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
 
     <TextView
-        android:id="@+id/tv_besthalfmarathonout"
+        android:id="@+id/textView13"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.149"
-        app:layout_constraintStart_toEndOf="@+id/tv_besthalfmarathon"
-        app:layout_constraintTop_toBottomOf="@+id/tv_besttenmileout" />
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="20dp"
+        android:text="Haven't Run Yet!"
+        app:layout_constraintStart_toEndOf="@+id/t_bestHalfMar"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
     <TextView
-        android:id="@+id/tv_bestmarathonout"
+        android:id="@+id/textView14"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.153"
-        app:layout_constraintStart_toEndOf="@+id/tv_bestmarathon"
-        app:layout_constraintTop_toBottomOf="@+id/tv_besthalfmarathonout" />
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="20dp"
+        android:text="Haven't Run Yet!"
+        app:layout_constraintStart_toEndOf="@+id/t_bestMar"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
     <TextView
-        android:id="@+id/tv_bestonekilometerout"
+        android:id="@+id/textView15"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="56dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.153"
-        app:layout_constraintStart_toEndOf="@+id/tv_bestonekilometer"
-        app:layout_constraintTop_toBottomOf="@+id/tv_bestmarathonout" />
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="20dp"
+        android:text="Haven't Run Yet!"
+        app:layout_constraintStart_toEndOf="@+id/t_bestOneK"
+        app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
     <TextView
-        android:id="@+id/tv_bestfivekilometerout"
+        android:id="@+id/textView16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="176dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.968"
-        app:layout_constraintStart_toEndOf="@+id/tv_bestfivekilometer"
-        app:layout_constraintTop_toBottomOf="@+id/tv_bestonekilometerout" />
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="20dp"
+        android:text="Haven't Run Yet!"
+        app:layout_constraintStart_toEndOf="@+id/t_bestFiveK"
+        app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
     <TextView
-        android:id="@+id/tv_besttenkilometerout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="44dp"
-        android:text="TextView"
-        app:layout_constraintStart_toEndOf="@+id/tv_besttenkilometer"
-        app:layout_constraintTop_toBottomOf="@+id/tv_bestfivekilometerout" />
+        android:id="@+id/textView17"
+        android:layout_width="110dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="76dp"
+        android:layout_marginTop="20dp"
+        android:text="Haven't Run Yet!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/t_bestTenK"
+        app:layout_constraintTop_toBottomOf="@+id/textView16"
+        app:layout_constraintVertical_bias="0.002" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
