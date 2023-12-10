@@ -3,12 +3,15 @@ package com.example.further;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -17,7 +20,7 @@ import io.reactivex.rxjava3.disposables.Disposable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 import io.reactivex.rxjava3.subjects.BehaviorSubject;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends FragmentActivity implements NoticeDialogFragment.NoticeDialogListener{
     boolean coarseFineAccuracy = true;
     boolean slowFastInterval = true;
 
@@ -89,6 +92,10 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 currentSettings.encrypt = sw_encrypt.isChecked();
                 saveSettings();
+
+                if (currentSettings.encrypt){
+                    showEncryptDialog();
+                }
             }
         });
 
@@ -156,4 +163,24 @@ public class SettingsActivity extends AppCompatActivity {
                 });
     }
 
+    private void showEncryptDialog()
+    {
+        DialogFragment dialogFragment = new NoticeDialogFragment();
+        dialogFragment.show(getSupportFragmentManager(), "ENCRYPT_DIALOG");
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        currentSettings.encrypt = true;
+        sw_encrypt.setChecked(true);
+
+        Log.d("ENCRYPT", Boolean.toString(currentSettings.encrypt));
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        currentSettings.encrypt = false;
+        sw_encrypt.setChecked(false);
+        Log.d("ENCRYPT", Boolean.toString(currentSettings.encrypt));
+    }
 }

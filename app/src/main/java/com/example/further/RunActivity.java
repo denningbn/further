@@ -25,10 +25,10 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.Priority;
 import com.google.android.gms.tasks.OnSuccessListener;
-import java.lang.Math;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -78,6 +78,9 @@ public class RunActivity extends AppCompatActivity {
 
     double[] currentBests;
 
+
+    ArrayList<Double> lats;
+    ArrayList<Double> longs;
     ImageView dg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -190,6 +193,7 @@ public class RunActivity extends AppCompatActivity {
         setTime();
         paceCalculation();
         runSplitLoop();
+        saveCoords();
 
         Run run = new Run(dis, pace);
 
@@ -411,6 +415,7 @@ public class RunActivity extends AppCompatActivity {
         while (iter.getNext() != null)
         {
             runSplitCalculation(iter);
+            iter = iter.getNext();
         }
     }
 
@@ -441,4 +446,20 @@ public class RunActivity extends AppCompatActivity {
         }
     }
 
+    private void saveCoords()
+    {
+        lats = new ArrayList<Double>();
+        longs = new ArrayList<Double>();
+        Location foo = null;
+
+        for (LocationNode<Location> iter = first; iter.getData() != null; iter = iter.getNext())
+        {
+            foo = (Location) iter.getData();
+
+            lats.add(foo.getLatitude());
+            longs.add(foo.getLongitude());
+        }
+
+
+    }
 }

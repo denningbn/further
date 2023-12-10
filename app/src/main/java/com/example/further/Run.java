@@ -3,7 +3,7 @@ package com.example.further;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -23,8 +23,11 @@ public class Run {
     @ColumnInfo(name = "pace")
     private String pace;
 
-    @ColumnInfo(name ="coordinates")
-    private double[][] coordinates;
+    @ColumnInfo(name ="lats")
+    private ArrayList<Double> lats;
+
+    @ColumnInfo(name ="longs")
+    private ArrayList<Double> longs;
 
 
     @ColumnInfo(name = "insertionDate")
@@ -108,12 +111,25 @@ public class Run {
     public String toString(){
         return (distance + "\nTime: " + pace);
     }
-    public double[][] getCoordinates(){
-        return coordinates;
+
+    public ArrayList<Double> getLats()
+    {
+        return lats;
     }
 
-    public void setCoordinates(double[][] _coordinates)
+    public ArrayList<Double> getLongs()
     {
-        this.coordinates = _coordinates;
+        return longs;
+    }
+
+    public void setLats(ArrayList<Double> _lats)
+    {
+        this.lats = _lats;
+    }
+
+    public void setLongs(ArrayList<Double> _longs)
+    {
+        this.longs = _longs;
     }
 }
+

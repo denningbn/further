@@ -3,6 +3,9 @@ import androidx.room.TypeConverter;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
 public class Converters {
 
     @TypeConverter
@@ -16,12 +19,24 @@ public class Converters {
     }
 
     @TypeConverter
-    public static double[][] from2DString(String value) {
-        return new Gson().fromJson(value, new TypeToken<double[][]>(){}.getType());
+    public static String fromArrayList(ArrayList<Double> arrayList) {
+        if (arrayList == null) {
+            return null;
+        }
+
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<Double>>() {}.getType();
+        return gson.toJson(arrayList, type);
     }
 
     @TypeConverter
-    public static String from2DArray(double[][] value) {
-        return new Gson().toJson(value);
+    public static ArrayList<Double> toArrayList(String json) {
+        if (json == null) {
+            return null;
+        }
+
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<Double>>() {}.getType();
+        return gson.fromJson(json, type);
     }
 }
