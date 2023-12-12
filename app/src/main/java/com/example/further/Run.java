@@ -109,7 +109,7 @@ public class Run {
         this.insertionDate = _insertionDate;
     }
     public String toString(){
-        return (distance + "\nTime: " + pace);
+        return (distance + " Miles\nTime: " + pace);
     }
 
     public ArrayList<Double> getLats()

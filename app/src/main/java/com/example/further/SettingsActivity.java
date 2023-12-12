@@ -47,6 +47,7 @@ public class SettingsActivity extends FragmentActivity implements NoticeDialogFr
 
     private Disposable disposable;
     private Disposable updateDisposable;
+    private String password;
 
 
 
@@ -93,9 +94,6 @@ public class SettingsActivity extends FragmentActivity implements NoticeDialogFr
                 currentSettings.encrypt = sw_encrypt.isChecked();
                 saveSettings();
 
-                if (currentSettings.encrypt){
-                    showEncryptDialog();
-                }
             }
         });
 
@@ -104,6 +102,10 @@ public class SettingsActivity extends FragmentActivity implements NoticeDialogFr
             public void onClick(View v) {
                 currentSettings.dgMode = sw_dgmode.isChecked();
                 saveSettings();
+
+                if (currentSettings.dgMode){
+                    showEncryptDialog();
+                }
             }
         });
 
@@ -171,16 +173,15 @@ public class SettingsActivity extends FragmentActivity implements NoticeDialogFr
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        currentSettings.encrypt = true;
-        sw_encrypt.setChecked(true);
+        currentSettings.dgMode = true;
+        sw_dgmode.setChecked(true);
 
-        Log.d("ENCRYPT", Boolean.toString(currentSettings.encrypt));
     }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog) {
-        currentSettings.encrypt = false;
-        sw_encrypt.setChecked(false);
-        Log.d("ENCRYPT", Boolean.toString(currentSettings.encrypt));
+        currentSettings.dgMode = false;
+        sw_dgmode.setChecked(false);
     }
+
 }

@@ -1,12 +1,13 @@
 package com.example.further;
 
-import static java.lang.Math.abs;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Build;
@@ -39,7 +40,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 public class RunActivity extends AppCompatActivity {
 
     private static final int PERMISSIONS_FINE_LOCATION = 99;
-    TextView tv_node, tv_runid;
+    TextView tv_runid, tv_watching, tv_distance;
 
     LocationRequest locationRequest;
 
@@ -92,6 +93,8 @@ public class RunActivity extends AppCompatActivity {
         b_end = findViewById(R.id.b_end);
         b_pause = findViewById(R.id.b_pause);
         dg = findViewById(R.id.img_dgmode);
+        tv_watching = findViewById(R.id.tv_watching);
+        tv_distance = findViewById(R.id.tv_distance);
 
 
         initVars();
@@ -193,9 +196,14 @@ public class RunActivity extends AppCompatActivity {
         setTime();
         paceCalculation();
         runSplitLoop();
-        saveCoords();
-
         Run run = new Run(dis, pace);
+
+        if (currentSettings.encrypt) {
+            saveCoords();
+            run.setLongs(longs);
+            run.setLats(lats);
+        }
+
 
         runObservable = Observable.create(emitter -> {
             appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
@@ -248,6 +256,7 @@ public class RunActivity extends AppCompatActivity {
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
+    @SuppressLint("ResourceAsColor")
     public void getSettings(){
         settingsObservable = Observable.create(emitter -> {
             appDatabase = AppDatabaseSingleton.getDatabaseInstance(this);
@@ -267,9 +276,21 @@ public class RunActivity extends AppCompatActivity {
 
                     if (currentSettings.dgMode){
                         dg.setVisibility(View.VISIBLE);
+                        tv_watching.setVisibility(View.VISIBLE);
+                        View mainLayout = findViewById(android.R.id.content);
+                        mainLayout.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+
+                        tv_runid.setTextColor(R.color.black);
+                        tv_watching.setTextColor(R.color.black);
+                        tv_distance.setTextColor(R.color.black);
+
+
+                        b_end.setBackgroundColor(R.color.black);
+                        b_pause.setBackgroundColor(R.color.black);
                     }
                     else {
                         dg.setVisibility(View.INVISIBLE);
+                        tv_watching.setVisibility(View.INVISIBLE);
                     }
 
                 });
@@ -325,9 +346,9 @@ public class RunActivity extends AppCompatActivity {
 
                 distanceBetweenPoints = roundTo(distanceBetweenPoints, 3);
 
-                if ((distanceBetweenPoints >0.001) && (speed > 0)) {
+                if ((distanceBetweenPoints >0.00075) && (speed > 0)) {
                     dis += distanceBetweenPoints;
-                    roundTo(dis, 2);
+                    dis = roundTo(dis, 2);
                 }
 
             }

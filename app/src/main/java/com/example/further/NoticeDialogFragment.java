@@ -4,11 +4,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.InputType;
+import android.widget.EditText;
 
 import androidx.fragment.app.DialogFragment;
-
-import java.util.Objects;
 
 public class NoticeDialogFragment extends DialogFragment {
 
@@ -16,6 +17,7 @@ public class NoticeDialogFragment extends DialogFragment {
         public void onDialogPositiveClick(DialogFragment dialog);
 
         public void onDialogNegativeClick(DialogFragment dialog);
+
     }
 
     NoticeDialogListener listener;
@@ -35,10 +37,13 @@ public class NoticeDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // Build the dialog and set up the button click handlers.
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Encrypt GPS Data69?")
-                .setPositiveButton("Encrypt", new DialogInterface.OnClickListener() {
+
+
+        builder.setMessage("Are you sure you want to enable David Goggins Mode?")
+                .setPositiveButton("Who's gonna carry the boats?", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Send the positive button event back to the host activity.
+
                         listener.onDialogPositiveClick(NoticeDialogFragment.this);
                     }
                 })

@@ -46,27 +46,41 @@
 
     <TextView
         android:id="@+id/tv_distance"
-        android:layout_width="129dp"
-        android:layout_height="0dp"
+        android:layout_width="166dp"
+        android:layout_height="52dp"
         android:layout_marginTop="80dp"
-        android:text="Distance(m): "
+        android:text="Distance(miles): "
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.198"
+        app:layout_constraintHorizontal_bias="0.124"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/img_dgmode"
-        android:layout_width="304dp"
-        android:layout_height="518dp"
+        android:layout_width="371dp"
+        android:layout_height="304dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        android:visibility="visible"
+        app:layout_constraintVertical_bias="0.749"
         app:srcCompat="@drawable/davidgoggins" />
+
+    <TextView
+        android:id="@+id/tv_watching"
+        android:layout_width="253dp"
+        android:layout_height="51dp"
+        android:text="HE IS WATCHING"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/img_dgmode" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
